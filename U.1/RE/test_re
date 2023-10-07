@@ -1,0 +1,26 @@
+#Let's go for it #We start with correct UOs
+Uo1234
+uo123456
+#Incorrect UOs
+UO123
+UO-1234
+
+# Correct email adresses
+a@uniovi.es
+a.1.2@uniovi.com
+
+# Incorrect email adresses
+2a@uniovi.es
+a..b@uniovi.com
+a.@uniovi.es
+
+# Correct codes
+AEIOU-12345-abcWa
+UOI-987-Ww
+OOOO-137-WW
+
+# Incorrect codes
+AA-123-Wa
+ABC-98-Wz
+ABC-98-zzzW
+UOI 987 Ww
