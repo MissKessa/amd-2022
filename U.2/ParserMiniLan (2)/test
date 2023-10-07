@@ -1,0 +1,8 @@
+begin
+  print(3 + 2 * 5);
+  print(2 * 4 + 6);
+  print(6-3);
+  print(6-3/2.0);
+  print((6-3)/2.0);
+  print(-(6-3)/2.0);
+end

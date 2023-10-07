@@ -1,0 +1,142 @@
+import java.io.FileReader;
+import java_cup.runtime.*;
+
+parser code{:
+   public static void main(String args[]) throws Exception {
+		      new parser(new Yylex(new FileReader(args[0]))).parse();
+    } // End Main
+:}
+
+
+
+terminal BEGIN, END, PRINT;
+terminal PLUS, MINUS, MULT, DIV,AVG;
+terminal EOS, LP, RP;
+terminal LT, GT, EQ;
+terminal Double NUMBER;
+terminal IDENT;
+terminal Boolean BOOLEAN;
+
+non terminal program, instructions, instruction, sentence, printSentence;
+non terminal Double arithExpr, term, factor,averageExpr;
+non terminal Boolean boolExpr;
+
+
+program			::= BEGIN instructions END            {: System.out.println("    PARSER:: program <== BEGIN instructions END"); :}
+                   ;
+
+instructions	::= instructions instruction          {: System.out.println("    PARSER:: instructions <== instructions instruction");:} 	
+                   | instruction                      {: System.out.println("    PARSER:: instructions <== instruction");:} 	
+                   ;
+
+instruction    	::= sentence EOS                      {: System.out.println("    PARSER:: instruction <== sentence EOS");:} 
+                   ;	
+
+sentence        ::= printSentence                     {: System.out.println("    PARSER:: sentence <== printSentence ");:} 	
+                   ;
+					
+printSentence   ::= PRINT LP arithExpr:a RP             
+					{: 
+						System.out.println("    PARSER:: printSentence <== PRINT LP arithExpr<"+a+"> RP"); 
+					:}
+					| PRINT LP boolExpr:a RP                                   
+					{: 
+						System.out.println("    PARSER:: printSentence <== PRINT LP boolExpr<"+a+"> RP");
+					:}
+                   ;
+
+boolExpr       ::= arithExpr:a LT arithExpr:b               
+					{: 
+						RESULT = a.compareTo(b)<0;
+						System.out.println("    PARSER:: boolExpr<"+RESULT+"> <== arithExpr<"+a+"> LT arithExpr<"+b+">"); 
+					:} 
+                   | arithExpr:a GT arithExpr:b              
+					{: 
+						RESULT = a.compareTo(b)>0;
+						System.out.println("    PARSER:: boolExpr<"+RESULT+"> <== arithExpr<"+a+"> GT arithExpr<"+b+">"); 
+					:} 
+                   | arithExpr:a EQ arithExpr:b                              
+					{: 
+						RESULT = a.compareTo(b)==0;
+						System.out.println("    PARSER:: boolExpr<"+RESULT+"> <== arithExpr<"+a+"> EQ arithExpr<"+b+">");
+					:}
+					| BOOLEAN:a                            
+					{: 
+						RESULT = a;
+						System.out.println("    PARSER:: boolExpr<"+RESULT+"> <== BOOLEAN<"+a+">");
+					:}
+					| boolExpr:a AND boolExpr:b                              
+					{: 
+						RESULT = a==true && b==true;
+						System.out.println("    PARSER:: boolExpr<"+RESULT+"> <== arithExpr<"+a+"> EQ arithExpr<"+b+">");
+					:}
+                   ;
+
+arithExpr       ::= arithExpr:a PLUS averageExpr:b               
+					{: 
+						RESULT = a+b;
+						System.out.println("    PARSER:: arithExpr<"+RESULT+"> <== arithExpr<"+a+"> PLUS averageExpr<"+b+">"); 
+					:} 
+                   | arithExpr:a MINUS averageExpr:b             
+					{: 
+						RESULT = a-b;
+						System.out.println("    PARSER:: arithExpr<"+RESULT+"> <== arithExpr<"+a+"> MINUS averageExpr<"+b+">"); 
+					:} 
+                   | averageExpr:a                             
+					{: 
+						RESULT = a;
+						System.out.println("    PARSER:: arithExpr<"+RESULT+"> <== averageExpr<"+a+">"); 
+					:}
+                   ;
+				
+term            ::= term:t MULT factor:f                  
+					{:
+						RESULT = t*f;
+						System.out.println("    PARSER:: term<"+RESULT+"> <== term<"+t+"> MULT factor<"+f+">"); 
+					:} 
+                   | term:t DIV factor:f
+					{: 
+						RESULT = t/f;
+						System.out.println("    PARSER:: term<"+RESULT+"> <== term<"+t+"> DIV factor<"+f+">"); 
+					:} 
+                   | factor:f                           
+					{: 
+						RESULT = f;
+						System.out.println("    PARSER:: term<"+RESULT+"> <== factor<"+f+">"); 
+					:}
+                   ;
+averageExpr				::= averageExpr:a AVG term:t                  
+					{:
+						RESULT = (a+t)/2;
+						System.out.println("    PARSER:: averageExpr<"+RESULT+"> <== averageExpr<"+a+"> AVG term<"+t+">"); 
+					:} 
+                   | term:t                             
+					{: 
+						RESULT = t;
+						System.out.println("    PARSER:: averageExpr<"+RESULT+"> <== term<"+t+">"); 
+					:}
+                   ;
+
+factor          ::= NUMBER:v                            
+					{: 
+						RESULT = v;
+						System.out.println("    PARSER:: factor<"+RESULT+"> <== NUMBER<"+v+">"); 
+					:} 
+                   | LP arithExpr:a RP                  
+					{: 
+						RESULT = a;
+						System.out.println("    PARSER:: factor<"+RESULT+"> <== LP arithExpr<"+a+"> RP "); 
+					:} 
+                   | PLUS factor:f                  	  
+					{: 
+						RESULT = f;
+						System.out.println("    PARSER:: factor<"+RESULT+"> <== PLUS factor<"+f+"> "); 
+					:} 
+                   | MINUS factor:f                 	  
+					{: 
+						RESULT = -f;
+						System.out.println("    PARSER:: factor<"+RESULT+"> <== MINUS factor<"+f+"> "); 
+					:} 
+                   ;
+					
+

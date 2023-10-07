@@ -1,0 +1,97 @@
+import java.io.FileReader;
+import java_cup.runtime.*;
+
+parser code{:
+   public static void main(String args[]) throws Exception {
+		      new parser(new Yylex(new FileReader(args[0]))).parse();
+    } // End Main
+:}
+
+
+
+terminal BEGIN, END, PRINT;
+terminal PLUS, MINUS, MULT, DIV;
+terminal EOS, LP, RP;
+terminal Double NUMBER;
+terminal IDENT;
+
+non terminal program, instructions, instruction, sentence, printSentence;
+non terminal Double arithExpr, term, factor;
+
+
+program			::= BEGIN instructions END            {: System.out.println("    PARSER:: program <== BEGIN instructions END"); :}
+                   ;
+
+instructions	::= instructions instruction          {: System.out.println("    PARSER:: instructions <== instructions instruction");:} 	
+                   | instruction                      {: System.out.println("    PARSER:: instructions <== instruction");:} 	
+                   ;
+
+instruction    	::= sentence EOS                      {: System.out.println("    PARSER:: instruction <== sentence EOS");:} 
+                   ;	
+
+sentence        ::= printSentence                     {: System.out.println("    PARSER:: sentence <== printSentence ");:} 	
+                   ;
+					
+printSentence   ::= PRINT LP arithExpr:a RP
+					{:
+					    RESULT=a;
+						System.out.println("    PARSER:: printSentence<"+RESULT+"> <== PRINT LP arithExpr<"+a+"> RP");
+					:}
+                    ;
+
+arithExpr       ::= arithExpr:a PLUS term:t
+					{:
+					    RESULT=a+t;
+						System.out.println("    PARSER:: arithExpr<"+RESULT+"> <== arithExpr<"+a+"> PLUS term<"+t+">");
+					:}
+					| arithExpr:a MINUS term:t
+					{:
+					    RESULT=a-t;
+						System.out.println("    PARSER:: arithExpr<"+RESULT+"> <== arithExpr<"+a+"> MINUS term<"+t+">");
+					:}
+					| term:t
+					{:
+					    RESULT=t;
+						System.out.println("    PARSER:: arithExpr<"+RESULT+"> <== term<"+t+">");
+					:}
+					;
+				
+term            ::= term:t MULT factor:f
+					{:
+					    RESULT=t*f;
+						System.out.println("    PARSER:: term<"+RESULT+"> <== term<"+t+"> MULT factor<"+f+">");
+					:}
+					| term:t DIV factor:f
+					{:
+					    RESULT=t/f;
+						System.out.println("    PARSER:: term<"+RESULT+"> <== term<"+t+"> DIV factor<"+f+">");
+					:}
+					| factor:f
+					{:
+					    RESULT=f;
+						System.out.println("    PARSER:: term<"+RESULT+"> <== factor<"+f+">");
+					:}
+					;
+					
+factor          ::= NUMBER:v
+					{:
+					    RESULT=v;
+						System.out.println("    PARSER:: factor<"+RESULT+"> <== NUMBER<"+v+">");
+					:}
+					| LP arithExpr:a RP
+					{:
+					    RESULT=a;
+						System.out.println("    PARSER:: factor<"+RESULT+"> <== LP arithExpr<"+a+"> RP ");
+					:}
+					| PLUS factor:f
+					{:
+					    RESULT=f;
+						System.out.println("    PARSER:: factor<"+RESULT+"> <== PLUS factor<"+f+">");
+					:}
+					| MINUS factor:f
+					{:
+					    RESULT=-f;
+						System.out.println("    PARSER:: factor<"+RESULT+"> <== MINUS factor<"+f+"> ");
+					:}
+					;
+					

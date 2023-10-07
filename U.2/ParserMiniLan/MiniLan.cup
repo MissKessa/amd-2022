@@ -1,0 +1,50 @@
+import java.io.FileReader;
+import java_cup.runtime.*;
+
+parser code{:
+   public static void main(String args[]) throws Exception {
+		      new parser(new Yylex(new FileReader(args[0]))).parse();
+    } // End Main
+:}
+
+
+
+terminal BEGIN, END;
+terminal PLUS, MULT;
+terminal PRINT;
+terminal EOS, LP, RP;
+terminal NUMBER;
+terminal IDENT;
+
+non terminal program, instructions, instruction, sentence, printSentence;
+non terminal arithExpr, term, factor;
+
+
+program			::= BEGIN instructions END            {: System.out.println("PARSER:: program <== BEGIN instructions END"); :}
+                   ;
+
+instructions	::= instructions instruction          {: System.out.println("PARSER:: instructions <== instructions instruction");:} 	
+                   | instruction                      {: System.out.println("PARSER:: instructions <== instruction");:} 	
+                   ;
+
+instruction    	::= sentence EOS                      {: System.out.println("PARSER:: instruction <== sentence EOS");:} 
+                   ;	
+
+sentence        ::= printSentence                     {: System.out.println("PARSER:: sentence <== printSentence ");:} 	
+                   ;
+					
+printSentence   ::= PRINT LP arithExpr RP             {: System.out.println("PARSER:: printSentence <== PRINT LP arithExpr RP"); :}
+                   ;
+
+arithExpr       ::= arithExpr PLUS term               {: System.out.println("PARSER:: arithExpr <== arithExpr PLUS term"); :} 
+                   | term                             {: System.out.println("PARSER:: arithExpr <== term"); :}
+                   ;
+				
+term            ::= term MULT factor                  {: System.out.println("PARSER:: term <== term MULT factor"); :} 
+                   | factor                           {: System.out.println("PARSER:: term <== factor"); :}
+                   ;
+					
+factor          ::= NUMBER                            {: System.out.println("PARSER:: factor <== NUMBER "); :} 
+                   ;
+					
+

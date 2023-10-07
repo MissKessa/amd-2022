@@ -1,0 +1,1 @@
+java -classpath ".;.\java-cup-11b-runtime.jar;.\java-cup-11b.jar;.\jflex-full-1.7.0.jar" parser test
